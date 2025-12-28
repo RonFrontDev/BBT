@@ -1,0 +1,12 @@
+.next
+node_modules
+.turbo
+dist
+.vercel
+coverage
+public
+/*.js
+.next/**
+.next/**/*
+.next/dev
+.next/dev/**

@@ -4,3 +4,9 @@ export interface TimeEntry {
   durationMinutes: number;
   categoryId?: string;
 }
+
+export interface Category {
+  id: string;
+  name: string;
+  color: string;
+}

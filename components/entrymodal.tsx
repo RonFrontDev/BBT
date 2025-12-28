@@ -1,11 +1,13 @@
 import { CircleStopIcon, PlayIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import type { TimeEntry, Category } from "@/lib/types";
 
-export interface Category {
-  id: string;
-  name: string;
-  color: string;
-}
+type SavePayload = {
+  id?: string;
+  description: string;
+  durationMinutes: number;
+  categoryId?: string;
+};
 
 export function EntryModal({
   date,
@@ -16,9 +18,9 @@ export function EntryModal({
 }: {
   date: Date;
   onClose: () => void;
-  onSave: (d: any) => void;
+  onSave: (d: SavePayload) => void;
   categories: Category[];
-  entry: any;
+  entry?: TimeEntry | null;
 }) {
   const [desc, setDesc] = useState(entry?.description || "");
   const [h, setH] = useState(
@@ -28,15 +30,19 @@ export function EntryModal({
   const [catId, setCatId] = useState(entry?.categoryId || categories[0]?.id);
   const [timer, setTimer] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const timerRef = useRef<any>(null);
+  const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (isRunning) {
-      timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
-    } else {
-      clearInterval(timerRef.current);
+      timerRef.current = window.setInterval(() => setTimer((t) => t + 1), 1000);
+    } else if (timerRef.current) {
+      window.clearInterval(timerRef.current);
     }
-    return () => clearInterval(timerRef.current);
+    return () => {
+      if (timerRef.current) {
+        window.clearInterval(timerRef.current);
+      }
+    };
   }, [isRunning]);
 
   const stopTimer = () => {

@@ -1,5 +1,6 @@
 "use client";
-import { Category, EntryModal } from "@/components/entrymodal";
+import { EntryModal } from "@/components/entrymodal";
+import type { Category } from "@/lib/types";
 import React, { useState } from "react";
 
 const initialCats: Category[] = [
@@ -11,7 +12,12 @@ const initialCats: Category[] = [
 export default function AboutPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleSave = async (data: any) => {
+  const handleSave = async (data: {
+    id?: string;
+    description: string;
+    durationMinutes: number;
+    categoryId?: string;
+  }) => {
     console.log("Saved data:", data);
   };
   return (

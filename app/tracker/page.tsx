@@ -1,17 +1,7 @@
-import { createClient } from "@/lib/supabase/server";
-import { Suspense } from "react";
+"use client";
 
-async function TrackerData() {
-  const supabase = await createClient();
-  const { data: tracker } = await supabase.from("time_tracker").select();
+import TrackerApp from "@/components/trackerapp";
 
-  return <pre>{JSON.stringify(tracker, null, 2)}</pre>;
-}
-
-export default function Trackers() {
-  return (
-    <Suspense fallback={<div>Loading trackers...</div>}>
-      <TrackerData />
-    </Suspense>
-  );
+export default function Page() {
+  return <TrackerApp />;
 }
