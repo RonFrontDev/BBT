@@ -5,7 +5,7 @@ export const metadata = {
   description: "Learn about BookingBTracker: our mission, values, and team.",
 };
 
-export default function AboutPage(): JSX.Element {
+export default function AboutPage() {
   return (
     <main style={styles.container}>
       <header style={styles.header}>
