@@ -141,60 +141,8 @@ const INITIAL_CATEGORIES: Category[] = [
 ];
 
 // --- GEMINI SERVICE ---
-const analyzeWithGemini = async (
-  entriesData: Entries,
-  categories: Category[]
-): Promise<string> => {
-  // Dynamically import the Gemini client if available. This avoids a hard dependency during build
-  // (the package may not be installed in all environments).
-  type GGClassType = new (opts: { apiKey: string }) => {
-    models: {
-      generateContent: (opts: {
-        model: string;
-        contents: string;
-      }) => Promise<{ text?: string }>;
-    };
-  };
-  let GoogleGenAIClass: GGClassType | null = null;
-  try {
-    // @ts-expect-error - optional dependency may not be installed in every environment
-    const mod = await import("@google/genai");
-    GoogleGenAIClass = mod?.GoogleGenAI ?? mod?.default ?? null;
-  } catch {
-    return "Gemini module not available.";
-  }
-  if (!GoogleGenAIClass) return "Gemini module not available.";
-  const ai = new GoogleGenAIClass({ apiKey: process.env.API_KEY || "" });
-  const categoryMap = new Map(categories.map((cat) => [cat.id, cat.name]));
-  const flattened = Object.entries(entriesData).flatMap(([date, dateEntries]) =>
-    dateEntries.map((entry) => ({
-      date,
-      ...entry,
-      cat: entry.categoryId
-        ? categoryMap.get(entry.categoryId)
-        : "Uncategorized",
-    }))
-  );
-  if (flattened.length === 0) return "No entries to analyze.";
-  const list = flattened
-    .map(
-      (e) =>
-        `- ${e.date}, ${e.cat}, ${e.description}, ${(
-          e.durationMinutes / 60
-        ).toFixed(2)}h`
-    )
-    .join("\n");
-  const prompt = `# Time Analysis Request\nAnalyze these entries:\n${list}\n\nGroup by category, show total hours, and give productivity insights in Markdown.`;
-  try {
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: prompt,
-    });
-    return response.text ?? "Error generating analysis.";
-  } catch (e) {
-    return "Gemini Error: " + String(e);
-  }
-};
+// AI analysis (Gemini) removed — button and modal were requested to be removed.
+// If you want the feature re-added later, I can restore a guarded dynamic import and UI.
 
 // --- SHEET SYNC SERVICE ---
 const normalizeSheetDate = (rawDate: unknown): string => {
@@ -327,9 +275,6 @@ export default function TrackerApp() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [analysisResult, setAnalysisResult] = useState("");
   const [editingEntry, setEditingEntry] = useState<TimeEntry | null>(null);
 
   // moved initial categories to module scope (INITIAL_CATEGORIES)
@@ -415,7 +360,6 @@ export default function TrackerApp() {
   };
 
   const handleSync = async () => {
-    setIsSyncing(true);
     const fetched = await supabaseGetEntries();
     const newMap: Entries = {};
     for (const e of fetched) {
@@ -423,15 +367,9 @@ export default function TrackerApp() {
       newMap[e.date].push(e);
     }
     setEntries(newMap);
-    setIsSyncing(false);
   };
 
-  const handleAnalyze = async () => {
-    setIsAnalysisOpen(true);
-    setAnalysisResult("Analyzing...");
-    const res = await analyzeWithGemini(entries, categories);
-    setAnalysisResult(res);
-  };
+  // AI analysis removed — handler removed along with UI.
 
   if (isLoading || !currentDate || !selectedDate)
     return <div className="p-20 text-center">Loading Tracker...</div>;
@@ -445,18 +383,6 @@ export default function TrackerApp() {
       <header className="flex flex-wrap items-center justify-between mb-8 gap-4">
         <h1 className="text-3xl font-black text-indigo-700">TRACKER</h1>
         <div className="flex gap-2">
-          <button
-            onClick={handleSync}
-            className="px-4 py-2 bg-sky-100 text-sky-700 rounded-lg font-bold hover:bg-sky-200 transition"
-          >
-            {isSyncing ? "Syncing..." : "Sync"}
-          </button>
-          <button
-            onClick={handleAnalyze}
-            className="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg font-bold hover:bg-purple-200 transition"
-          >
-            AI Analysis
-          </button>
           <button
             onClick={() => exportToCSV(entries, categories)}
             className="px-4 py-2 bg-green-100 text-green-700 rounded-lg font-bold hover:bg-green-200 transition"
@@ -697,33 +623,7 @@ export default function TrackerApp() {
         />
       )}
 
-      {/* Analysis Modal */}
-      {isAnalysisOpen && (
-        <div
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          onClick={() => setIsAnalysisOpen(false)}
-        >
-          <div
-            className="bg-white w-full max-w-2xl rounded-3xl p-8 max-h-[80vh] flex flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="text-2xl font-black text-indigo-700 mb-6">
-              AI Insight
-            </h2>
-            <div className="flex-1 overflow-y-auto prose prose-slate">
-              <pre className="whitespace-pre-wrap font-sans text-slate-600 leading-relaxed">
-                {analysisResult}
-              </pre>
-            </div>
-            <button
-              onClick={() => setIsAnalysisOpen(false)}
-              className="mt-8 w-full py-3 bg-indigo-600 text-white rounded-xl font-bold"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+      {/* AI analysis UI removed */}
     </div>
   );
 }
