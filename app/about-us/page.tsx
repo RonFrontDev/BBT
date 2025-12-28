@@ -1,13 +1,37 @@
-import React from "react";
+"use client";
+import { Category, EntryModal } from "@/components/entrymodal";
+import React, { useState } from "react";
 
-export const metadata = {
-  title: "About Us — BookingBTracker",
-  description: "Learn about BookingBTracker: our mission, values, and team.",
-};
+const initialCats: Category[] = [
+  { id: "1", name: "Kundemøde", color: "#3b82f6" },
+  { id: "2", name: "Telefontid", color: "#16a34a" },
+  { id: "3", name: "Onboarding", color: "#f97316" },
+];
 
 export default function AboutPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleSave = async (data: any) => {
+    console.log("Saved data:", data);
+  };
   return (
     <main style={styles.container}>
+      <button onClick={() => setIsModalOpen(true)}>Open Entry Modal</button>
+      {/* Entry Modal */}
+      {isModalOpen && (
+        <EntryModal
+          date={new Date()}
+          onClose={() => setIsModalOpen(false)}
+          onSave={handleSave}
+          categories={initialCats}
+          entry={{
+            id: "1",
+            description: "test",
+            durationMinutes: 0,
+            categoryId: undefined,
+          }}
+        />
+      )}
       <header style={styles.header}>
         <h1 style={styles.title}>About BookingBTracker</h1>
         <p style={styles.lead}>
