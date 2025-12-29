@@ -1,11 +1,6 @@
-import { LoginForm } from "@/components/login-form";
+import { redirect } from "next/navigation";
 
 export default function Page() {
-  return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <LoginForm />
-      </div>
-    </div>
-  );
+  // Redirect legacy nested auth route to the top-level /login page
+  redirect("/login");
 }

@@ -72,8 +72,7 @@ const supabaseSaveEntry = async (entry: FlatTimeEntry): Promise<void> => {
     // supabase.auth.getUser() returns { data: { user } }
     // If the user is not signed in this will be null and we send null.
     // This requires the client SDK (browser) to have an active session.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const userResp: any = await supabase.auth.getUser();
+    const userResp = await supabase.auth.getUser();
     user_id = userResp?.data?.user?.id ?? null;
   } catch {
     user_id = null;
@@ -331,7 +330,7 @@ export default function TrackerApp() {
       setEntries(map);
       setIsModalOpen(false);
       setEditingEntry(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       // Common cause: missing NEXT_PUBLIC_SUPABASE_* env vars or RLS blocking the insert.
       const msg =
         err instanceof Error
@@ -359,15 +358,7 @@ export default function TrackerApp() {
     setEntries(mapAfterDel);
   };
 
-  const handleSync = async () => {
-    const fetched = await supabaseGetEntries();
-    const newMap: Entries = {};
-    for (const e of fetched) {
-      if (!newMap[e.date]) newMap[e.date] = [];
-      newMap[e.date].push(e);
-    }
-    setEntries(newMap);
-  };
+  // `handleSync` removed (sync UI removed)
 
   // AI analysis removed — handler removed along with UI.
 
