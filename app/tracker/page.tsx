@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import TrackerApp from "@/components/trackerapp";
+import TrackerApp from "@/app/tracker/_components/trackerapp";
 import { createClient } from "@/lib/supabase/client";
 
 export default function Page() {

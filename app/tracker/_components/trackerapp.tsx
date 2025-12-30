@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import { EntryModal } from "./entrymodal";
+import { EntryModal } from "../../../components/entrymodal";
 import { createClient } from "@/lib/supabase/client";
 
 // ==========================================
